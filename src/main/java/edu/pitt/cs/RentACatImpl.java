@@ -19,6 +19,18 @@ public class RentACatImpl implements RentACat {
 
 	public boolean returnCat(int id) {
 		// TODO: Fill in
+		for (Cat c : cats) {
+			if ((c.getId() == id) && (!c.getRented())) {
+				System.out.println(c.getName() + " is already here!");
+				return false;
+			}
+			if ((c.getId() == id) && (c.getRented())) {
+				c.returnCat();
+				System.out.println("Welcome back, " + c.getName() + "!");
+				return true;
+			}
+		}
+		
 		return false;
 	}
 
@@ -34,9 +46,20 @@ public class RentACatImpl implements RentACat {
 
 	public boolean rentCat(int id) {
 		// TODO: Fill in
+		for (Cat c : cats) {
+			if (c.getRented()) {
+				System.out.println("Sorry, " + c.getName() + " is not here!");
+				return false;
+			}
+			if ((c.getId() == id) && (!c.getRented())) {
+				c.rentCat();
+				System.out.println(c.getName() + " has been rented.");
+				return true;
+			}
+		}
 		return false;
 	}
-
+	
 	/**
 	 * Rename a cat. This calls the .renameCat(String) method on the cat for the
 	 * passed-in cat id, if the cat exists, and then returns true. If the cat does
@@ -48,6 +71,13 @@ public class RentACatImpl implements RentACat {
 
 	public boolean renameCat(int id, String name) {
 		// TODO: Fill in
+		for(Cat c : cats){
+			if(c.getId()==id){
+				c.renameCat(name);
+				return true;
+			}
+		}
+		System.out.println("Invalid cat ID.");
 		return false;
 	}
 
@@ -63,7 +93,15 @@ public class RentACatImpl implements RentACat {
 
 	public String listCats() {
 		// TODO: Fill in
-		return "WRITE CODE FOR THIS";
+		String out = "";
+
+		for(Cat c : cats){
+			if(c.getRented()==false){
+				out+="ID " + c.getId() + ". " + c.getName() + "\n";
+			}
+		}
+
+		return out;
 	}
 
 	/**
@@ -78,6 +116,7 @@ public class RentACatImpl implements RentACat {
 
 		// null check
 		if (cats == null) {
+			System.out.println("Invalid cat ID.");
 			return null;
 		}
 
