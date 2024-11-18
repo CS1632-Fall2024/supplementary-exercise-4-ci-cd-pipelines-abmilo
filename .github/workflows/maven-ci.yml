@@ -1,7 +1,5 @@
 name: Maven CI
 
-# Triggers manually or on push or pull request on the main branch
-# (in other words, on a code integration event.)
 on:
   workflow_dispatch:
   push:
@@ -15,16 +13,12 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write
+      contents: read
 
     steps:
-      # The uses: keyword invokes a GitHub action:
-      # https://github.com/marketplace/actions/checkout
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # This invokes the Setup Java JDK GitHub action:
-      # https://github.com/marketplace/actions/setup-java-jdk
       - name: Set up JDK 11
         uses: actions/setup-java@v3
         with:
@@ -35,7 +29,6 @@ jobs:
       - name: Test with Maven
         run: mvn test
 
-      # https://github.com/marketplace/actions/upload-a-build-artifact
       - name: Upload jacoco results as artifact
         uses: actions/upload-artifact@v3
         with:
@@ -49,13 +42,13 @@ jobs:
           path: .
 
   # Uploads dependency graph to GitHub to receive Dependabot alerts
-  update_dependence_graph:
-    needs: [maven_test] # Enforces that maven_test runs first
-
+  update_dependency_graph:
+    needs: [maven_test] # Ensures maven_test runs first
     runs-on: ubuntu-latest
 
     permissions:
       contents: write
+      dependency-graph: write # Add permission for dependency graph updates
 
     steps:
       - name: Restore cached build
@@ -64,6 +57,8 @@ jobs:
           key: cached-build-${{github.sha}}
           path: .
 
-      # https://github.com/marketplace/actions/maven-dependency-tree-dependency-submission
+      - name: Checkout repository
+        uses: actions/checkout@v3 # Ensure the repository is checked out
+
       - name: Update dependency graph
         uses: advanced-security/maven-dependency-submission-action@v3
